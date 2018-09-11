@@ -1,7 +1,7 @@
 #include "nurbs.h"
 
 
-Nurbs::Nurbs(QObject *parent) : QObject(parent)
+Nurbs::Nurbs()
 {
 }
 
@@ -17,7 +17,7 @@ void Nurbs::free_mem(){
     }
 }
 
-void Nurbs::setControls(QVector<Vertex> controls)
+void Nurbs::setControls(QList<Vertex> controls)
 {
     int newControlCount = controls.length();
     this->free_mem();
@@ -85,6 +85,8 @@ double Nurbs::R(int i, int n, double u)
 Vertex Nurbs::C(double u)
 {
     Vertex c;
+    if (u>=1)
+        u = 0.9999999999999;
     int n = this->degree;
     for (int i = 0; i < this->controlCount; i++){
         Vertex P = this->controls[i];
@@ -93,9 +95,9 @@ Vertex Nurbs::C(double u)
     return c;
 }
 
-QVector<Vertex> Nurbs::range(int divisions)
+QList<Vertex> Nurbs::range(int divisions)
 {
-    QVector<Vertex> verts; // = new QVector<Vertex>();
+    QList<Vertex> verts; // = new QVector<Vertex>();
     double divs = (double)divisions;
     double numerator = divs-1;
     for (double i = 0; i < divs; i++){
@@ -103,5 +105,20 @@ QVector<Vertex> Nurbs::range(int divisions)
         verts.append(this->C(c));
     }
     return verts;
+}
+
+QList<double> Nurbs::getKonts()
+{
+    QList<double> knots;
+    for (int i = 0; i < this->controlCount+3; i++)
+        knots.append(this->knots[i]);
+    return knots;
+}
+
+void Nurbs::setKnots(QList<double> newKnots)
+{
+    if (newKnots.length() == this->controlCount+3)
+        for (int i = 0; i < newKnots.length(); i++)
+            this->knots[i] = newKnots[i];
 }
 

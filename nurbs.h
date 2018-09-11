@@ -3,7 +3,7 @@
 
 #include "nurbs_global.h"
 #include <vertex.h>
-#include <QVector>
+#include <QList>
 #include <QObject>
 
 class NURBSSHARED_EXPORT Nurbs : QObject
@@ -16,16 +16,19 @@ class NURBSSHARED_EXPORT Nurbs : QObject
     int controlCount = 0;
 
     void free_mem();
+    Nurbs(const Nurbs &);
 public:
-    explicit Nurbs(QObject *parent = nullptr);
+    explicit Nurbs();
     ~Nurbs();
-    void setControls(QVector<Vertex> controls);
+    void setControls(QList<Vertex> controls);
     double g(int i, int n, double u);
     double f(int i, int n, double u);
     double N(int i, int n, double u);
     double R(int i, int n, double u);
     Vertex C(double u);
-    QVector<Vertex> range(int divisions);
+    QList<Vertex> range(int divisions);    
+    QList<double> getKonts();
+    void setKnots(QList<double> newKnots);
 
 };
 

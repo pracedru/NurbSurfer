@@ -1,6 +1,7 @@
 #ifndef VECTOR_H
 #define VECTOR_H
 
+#include <QList>
 #include <iostream>
 
 struct Vertex{
@@ -22,12 +23,19 @@ struct Vertex{
         return Vertex(x+rhs.x, y+rhs.y, z+rhs.z);
     }
 
-    std::string toString(){
-        std::string value = "";
-        value += "x: " + std::to_string(x);
-        value += " y: " + std::to_string(y);
-        value += " z: " + std::to_string(z);
+    QString toString(){
+        QString value = "";
+        value += "x: " + QString::number(x);
+        value += " y: " + QString::number(y);
+        value += " z: " + QString::number(z);
         return value;
+    }
+    QList<double> xyz(){
+        QList<double> retVal;
+        retVal.append(x);
+        retVal.append(y);
+        retVal.append(z);
+        return retVal;
     }
 };
 
