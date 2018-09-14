@@ -14,28 +14,50 @@ void Nurbs::free_mem(){
     if (this->controlCount>0){
         delete [] this->controls;
         delete [] this->knots;
+        delete [] this->weights;
     }
 }
 
-void Nurbs::setControls(QList<Vertex> controls)
+void Nurbs::set_controls(QList<Vertex> controls)
 {
     int newControlCount = controls.length();
     this->free_mem();
     if (newControlCount > 0){
         this->controls = new Vertex[newControlCount];
-        this->knots = new double[newControlCount+3];
-        for (int i = 0; i < newControlCount; i++)
+        this->weights = new double[newControlCount];
+        this->knots = new double[newControlCount + this->degree + 1];
+        for (int i = 0; i < newControlCount; i++){
             this->controls[i] = controls[i];
-        this->knots[0] = 0.0;
-        this->knots[1] = 0.0;
-        for (int i = 0; i < newControlCount-1; i++){
-            double k = (double)i / ((double)newControlCount-2.0);
-            this->knots[i+2] = k;
+            this->weights[i] = 1.0;
         }
-        this->knots[newControlCount+1] = 1.0;
-        this->knots[newControlCount+2] = 1.0;
+        for (int i = 0; i < this->degree; i++)
+            this->knots[i] = 0.0;
+
+        for (int i = 0; i < newControlCount - this->degree + 1; i++){
+            double k = (double)i / ((double)newControlCount-(double)this->degree);
+            this->knots[i+this->degree] = k;
+        }
+
+        for (int i = 0; i < this->degree; i++)
+            this->knots[newControlCount + 1 + i] = 1.0;
     }
     this->controlCount = newControlCount;
+}
+
+QList<Vertex> Nurbs::get_controls()
+{
+    QList<Vertex> controls;
+    for (int i = 0; i < controlCount; i++)
+        controls.append(this->controls[i]);
+    return controls;
+}
+
+Vertex Nurbs::get_control(int index)
+{
+    if (index < controlCount && index >= 0){
+        return this->controls[index];
+    }
+    return Vertex();
 }
 
 double Nurbs::g(int i, int n, double u)
@@ -77,7 +99,9 @@ double Nurbs::R(int i, int n, double u)
         double num = this->N(i, n, u) * this->weights[i];
         double denom = 0.0;
         for (int j = 0; j < this->controlCount; j++)
-            denom += this->N(j, n, u) * this->weights[i];
+            denom += this->N(j, n, u) * this->weights[j];
+        if (denom == 0)
+            denom = 1e-99;
         return num / denom;
     }
 }
@@ -97,7 +121,7 @@ Vertex Nurbs::C(double u)
 
 QList<Vertex> Nurbs::range(int divisions)
 {
-    QList<Vertex> verts; // = new QVector<Vertex>();
+    QList<Vertex> verts;
     double divs = (double)divisions;
     double numerator = divs-1;
     for (double i = 0; i < divs; i++){
@@ -107,18 +131,23 @@ QList<Vertex> Nurbs::range(int divisions)
     return verts;
 }
 
-QList<double> Nurbs::getKonts()
+QList<double> Nurbs::get_knots()
 {
     QList<double> knots;
-    for (int i = 0; i < this->controlCount+3; i++)
+    for (int i = 0; i < this->controlCount+this->degree+1; i++)
         knots.append(this->knots[i]);
     return knots;
 }
 
-void Nurbs::setKnots(QList<double> newKnots)
+void Nurbs::set_knots(QList<double> newKnots)
 {
-    if (newKnots.length() == this->controlCount+3)
+    if (newKnots.length() == this->controlCount+this->degree + 1)
         for (int i = 0; i < newKnots.length(); i++)
             this->knots[i] = newKnots[i];
+}
+
+void Nurbs::set_degree(int degree)
+{
+    this->degree = degree;
 }
 

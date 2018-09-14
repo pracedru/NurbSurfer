@@ -23,14 +23,14 @@ struct Vertex{
         return Vertex(x+rhs.x, y+rhs.y, z+rhs.z);
     }
 
-    QString toString(){
+    QString to_string(){
         QString value = "";
         value += "x: " + QString::number(x);
         value += " y: " + QString::number(y);
         value += " z: " + QString::number(z);
         return value;
     }
-    QList<double> xyz(){
+    QList<double> get_xyz(){
         QList<double> retVal;
         retVal.append(x);
         retVal.append(y);

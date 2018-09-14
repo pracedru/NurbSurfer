@@ -8,21 +8,17 @@
 class NurbsSurface : public QObject
 {
     Nurbs nurbs1;
-    Nurbs nurbs2;
-    QList<QList<Vertex>> controls;
-    int controlCount1 = 0;
-    int controlCount2 = 0;
+    Nurbs nurbs2;        
     int degree = 2;
     double **weights;
     Q_OBJECT
     NurbsSurface(const NurbsSurface &);
 public:
     NurbsSurface();
-    void setControls(QList<QList<Vertex>> newControls);
-    void addControls(QList<Vertex> newControls);
+    void set_controls(QList<Vertex> new_controls_1, QList<Vertex> new_controls_2);
     double R(int i, int j, int n, double u, double v);
     Vertex S(double u, double v);
-    QList<Vertex> range(int divisions1, int divisions2, bool with_normals=false);
+    QList<Vertex> range(int divisions1, int divisions2);
 signals:
 
 public slots:
